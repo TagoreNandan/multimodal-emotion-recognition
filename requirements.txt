@@ -159,3 +159,16 @@ websocket-client==1.9.0
 widgetsnbextension==4.0.15
 xxhash==3.7.0
 yarl==1.23.0
+streamlit
+torch
+torchaudio
+torchvision
+transformers==4.41.2
+librosa
+numpy
+scikit-learn
+matplotlib
+seaborn
+pandas
+soundfile
+sentencepiece

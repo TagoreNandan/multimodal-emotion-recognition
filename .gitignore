@@ -245,3 +245,14 @@ data/processed/
 
 # Python cache
 __pycache__/
+
+
+
+
+venv/
+newenv/
+__pycache__/
+.ipynb_checkpoints/
+data/raw/
+*.pyc
+.DS_Store
