@@ -239,11 +239,11 @@ class AttentionFusionModel(nn.Module):
 
 
 # =========================
-# LOAD TRAINED MODELS
+# LOAD INDIVIDUAL MODELS
 # =========================
 
 @st.cache_resource
-def load_models():
+def load_speech_model():
 
     speech_model = EmotionBiLSTM()
 
@@ -256,6 +256,12 @@ def load_models():
 
     speech_model.eval()
 
+    return speech_model
+
+
+@st.cache_resource
+def load_text_model():
+
     text_model = TextMLP()
 
     text_model.load_state_dict(
@@ -266,6 +272,12 @@ def load_models():
     )
 
     text_model.eval()
+
+    return text_model
+
+
+@st.cache_resource
+def load_fusion_model():
 
     fusion_model = AttentionFusionModel()
 
@@ -278,11 +290,7 @@ def load_models():
 
     fusion_model.eval()
 
-    return (
-        speech_model,
-        text_model,
-        fusion_model
-    )
+    return fusion_model
 
 
 # =========================
@@ -376,7 +384,7 @@ if mode == "Speech Only":
 
     if uploaded_audio:
 
-        speech_model, _, _ = load_models()
+        speech_model = load_speech_model()
 
         st.audio(uploaded_audio)
 
@@ -418,7 +426,7 @@ elif mode == "Text Only":
 
     if text_input:
 
-        _, text_model, _ = load_models()
+        text_model = load_text_model()
 
         embedding = extract_text_embedding(
             text_input
@@ -461,7 +469,7 @@ elif mode == "Multimodal":
 
     if uploaded_audio and text_input:
 
-        _, _, fusion_model = load_models()
+        fusion_model = load_fusion_model()
 
         st.audio(uploaded_audio)
 
