@@ -25,7 +25,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("Multimodal Emotion Recognition")
+st.title("🎭 Multimodal Emotion Recognition")
 
 st.write(
     "Speech + Text + Multimodal Emotion Detection"
@@ -59,8 +59,8 @@ label_encoder.fit(emotion_labels)
 def load_wav2vec():
 
     processor = AutoProcessor.from_pretrained(
-    "facebook/wav2vec2-base"
-)
+        "facebook/wav2vec2-base"
+    )
 
     model = Wav2Vec2Model.from_pretrained(
         "facebook/wav2vec2-base"
@@ -89,11 +89,6 @@ def load_bert():
     model.eval()
 
     return tokenizer, model
-
-
-wav_processor, wav_model = load_wav2vec()
-
-bert_tokenizer, bert_model = load_bert()
 
 
 # =========================
@@ -290,14 +285,13 @@ def load_models():
     )
 
 
-speech_model, text_model, fusion_model = load_models()
-
-
 # =========================
 # AUDIO EMBEDDINGS
 # =========================
 
 def extract_speech_embedding(audio_file):
+
+    wav_processor, wav_model = load_wav2vec()
 
     audio, sr = librosa.load(
         audio_file,
@@ -331,6 +325,8 @@ def extract_speech_embedding(audio_file):
 # =========================
 
 def extract_text_embedding(text):
+
+    bert_tokenizer, bert_model = load_bert()
 
     inputs = bert_tokenizer(
         text,
@@ -380,6 +376,8 @@ if mode == "Speech Only":
 
     if uploaded_audio:
 
+        speech_model, _, _ = load_models()
+
         st.audio(uploaded_audio)
 
         sequence_embedding, _ = (
@@ -419,6 +417,8 @@ elif mode == "Text Only":
     )
 
     if text_input:
+
+        _, text_model, _ = load_models()
 
         embedding = extract_text_embedding(
             text_input
@@ -460,6 +460,8 @@ elif mode == "Multimodal":
     )
 
     if uploaded_audio and text_input:
+
+        _, _, fusion_model = load_models()
 
         st.audio(uploaded_audio)
 
