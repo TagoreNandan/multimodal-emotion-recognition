@@ -7,7 +7,7 @@ torchvision
 transformers==4.41.2
 sentencepiece
 
-numpy<2
+numpy
 pandas
 scikit-learn
 scipy
@@ -15,10 +15,10 @@ scipy
 matplotlib
 seaborn
 
-librosa==0.10.2
+librosa
 soundfile
 
-pillow>=10.4.0
+Pillow
 
 huggingface_hub
 safetensors
