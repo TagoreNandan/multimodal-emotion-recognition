@@ -50,4 +50,4 @@ dist/
 # =========================
 !models/speech_pipeline/emotion_bilstm.pth
 !models/text_pipeline/text_mlp.pth
-!models/fusion_pipeline/attention_fusion_model.pth
+!models/fusion_pipeline/attention_fusion_model.pthdata/
