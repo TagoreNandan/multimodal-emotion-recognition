@@ -23,7 +23,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("🎭 Multimodal Emotion Recognition")
+st.title("Multimodal Emotion Recognition")
 
 st.write(
     "Speech + Text + Multimodal Emotion Detection"
