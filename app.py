@@ -1,8 +1,6 @@
 import streamlit as st
-
 import numpy as np
 import librosa
-
 import torch
 import torch.nn as nn
 
@@ -47,52 +45,11 @@ emotion_labels = np.array([
 ])
 
 label_encoder = LabelEncoder()
-
 label_encoder.fit(emotion_labels)
 
 
 # =========================
-# LOAD WAV2VEC2
-# =========================
-
-@st.cache_resource
-def load_wav2vec():
-
-    processor = AutoProcessor.from_pretrained(
-        "facebook/wav2vec2-base"
-    )
-
-    model = Wav2Vec2Model.from_pretrained(
-        "facebook/wav2vec2-base"
-    )
-
-    model.eval()
-
-    return processor, model
-
-
-# =========================
-# LOAD BERT
-# =========================
-
-@st.cache_resource
-def load_bert():
-
-    tokenizer = BertTokenizer.from_pretrained(
-        "bert-base-uncased"
-    )
-
-    model = BertModel.from_pretrained(
-        "bert-base-uncased"
-    )
-
-    model.eval()
-
-    return tokenizer, model
-
-
-# =========================
-# SPEECH MODEL
+# MODELS
 # =========================
 
 class EmotionBiLSTM(nn.Module):
@@ -111,13 +68,9 @@ class EmotionBiLSTM(nn.Module):
         )
 
         self.classifier = nn.Sequential(
-
             nn.Linear(256, 128),
-
             nn.ReLU(),
-
             nn.Dropout(0.3),
-
             nn.Linear(128, 7)
         )
 
@@ -133,10 +86,6 @@ class EmotionBiLSTM(nn.Module):
         return self.classifier(hidden)
 
 
-# =========================
-# TEXT MODEL
-# =========================
-
 class TextMLP(nn.Module):
 
     def __init__(self):
@@ -144,19 +93,12 @@ class TextMLP(nn.Module):
         super().__init__()
 
         self.network = nn.Sequential(
-
             nn.Linear(768, 256),
-
             nn.ReLU(),
-
             nn.Dropout(0.3),
-
             nn.Linear(256, 128),
-
             nn.ReLU(),
-
             nn.Dropout(0.3),
-
             nn.Linear(128, 7)
         )
 
@@ -165,10 +107,6 @@ class TextMLP(nn.Module):
         return self.network(x)
 
 
-# =========================
-# ATTENTION FUSION MODEL
-# =========================
-
 class AttentionFusionModel(nn.Module):
 
     def __init__(self):
@@ -176,47 +114,29 @@ class AttentionFusionModel(nn.Module):
         super().__init__()
 
         self.speech_attention = nn.Sequential(
-
             nn.Linear(768, 256),
-
             nn.ReLU(),
-
             nn.Linear(256, 1),
-
             nn.Sigmoid()
         )
 
         self.text_attention = nn.Sequential(
-
             nn.Linear(768, 256),
-
             nn.ReLU(),
-
             nn.Linear(256, 1),
-
             nn.Sigmoid()
         )
 
         self.classifier = nn.Sequential(
-
             nn.Linear(1536, 512),
-
             nn.ReLU(),
-
             nn.Dropout(0.3),
-
             nn.Linear(512, 256),
-
             nn.ReLU(),
-
             nn.Dropout(0.3),
-
             nn.Linear(256, 128),
-
             nn.ReLU(),
-
             nn.Dropout(0.3),
-
             nn.Linear(128, 7)
         )
 
@@ -227,7 +147,6 @@ class AttentionFusionModel(nn.Module):
         text_weight = self.text_attention(text)
 
         speech = speech * speech_weight
-
         text = text * text_weight
 
         fused = torch.cat(
@@ -239,62 +158,94 @@ class AttentionFusionModel(nn.Module):
 
 
 # =========================
-# LOAD INDIVIDUAL MODELS
+# SAFE LAZY LOADERS
 # =========================
+
+@st.cache_resource
+def load_wav2vec():
+
+    processor = AutoProcessor.from_pretrained(
+        "facebook/wav2vec2-base"
+    )
+
+    model = Wav2Vec2Model.from_pretrained(
+        "facebook/wav2vec2-base"
+    )
+
+    model.eval()
+
+    return processor, model
+
+
+@st.cache_resource
+def load_bert():
+
+    tokenizer = BertTokenizer.from_pretrained(
+        "bert-base-uncased"
+    )
+
+    model = BertModel.from_pretrained(
+        "bert-base-uncased"
+    )
+
+    model.eval()
+
+    return tokenizer, model
+
 
 @st.cache_resource
 def load_speech_model():
 
-    speech_model = EmotionBiLSTM()
+    model = EmotionBiLSTM()
 
-    speech_model.load_state_dict(
+    model.load_state_dict(
         torch.load(
             "models/speech_pipeline/emotion_bilstm.pth",
             map_location="cpu"
         )
     )
 
-    speech_model.eval()
+    model.eval()
 
-    return speech_model
+    return model
 
 
 @st.cache_resource
 def load_text_model():
 
-    text_model = TextMLP()
+    model = TextMLP()
 
-    text_model.load_state_dict(
+    model.load_state_dict(
         torch.load(
             "models/text_pipeline/text_mlp.pth",
             map_location="cpu"
         )
     )
 
-    text_model.eval()
+    model.eval()
 
-    return text_model
+    return model
 
 
 @st.cache_resource
 def load_fusion_model():
 
-    fusion_model = AttentionFusionModel()
+    model = AttentionFusionModel()
 
-    fusion_model.load_state_dict(
+    model.load_state_dict(
         torch.load(
             "models/fusion_pipeline/attention_fusion_model.pth",
             map_location="cpu"
         )
     )
 
-    fusion_model.eval()
+    model.eval()
 
-    return fusion_model
+    return model
 
 
 # =========================
-# AUDIO EMBEDDINGS
+# FEATURE EXTRACTION
 # =========================
 
 def extract_speech_embedding(audio_file):
@@ -317,26 +268,18 @@ def extract_speech_embedding(audio_file):
 
         outputs = wav_model(**inputs)
 
-    sequence_embedding = (
-        outputs.last_hidden_state
-    )
+    sequence_embedding = outputs.last_hidden_state
 
-    pooled_embedding = (
-        sequence_embedding.mean(dim=1)
-    )
+    pooled_embedding = sequence_embedding.mean(dim=1)
 
     return sequence_embedding, pooled_embedding
 
 
-# =========================
-# TEXT EMBEDDINGS
-# =========================
-
 def extract_text_embedding(text):
 
-    bert_tokenizer, bert_model = load_bert()
+    tokenizer, bert_model = load_bert()
 
-    inputs = bert_tokenizer(
+    inputs = tokenizer(
         text,
         return_tensors="pt",
         truncation=True,
@@ -348,11 +291,7 @@ def extract_text_embedding(text):
 
         outputs = bert_model(**inputs)
 
-    embedding = outputs.last_hidden_state[
-        :,
-        0,
-        :
-    ]
+    embedding = outputs.last_hidden_state[:, 0, :]
 
     return embedding
 
@@ -384,34 +323,28 @@ if mode == "Speech Only":
 
     if uploaded_audio:
 
-        speech_model = load_speech_model()
-
         st.audio(uploaded_audio)
 
-        sequence_embedding, _ = (
-            extract_speech_embedding(
+        with st.spinner("Loading speech model..."):
+
+            speech_model = load_speech_model()
+
+            sequence_embedding, _ = extract_speech_embedding(
                 uploaded_audio
             )
-        )
 
-        with torch.no_grad():
+            with torch.no_grad():
 
-            outputs = speech_model(
-                sequence_embedding
-            )
+                outputs = speech_model(sequence_embedding)
 
-            pred = torch.argmax(
-                outputs,
-                dim=1
-            ).item()
+                pred = torch.argmax(
+                    outputs,
+                    dim=1
+                ).item()
 
-        emotion = label_encoder.inverse_transform(
-            [pred]
-        )[0]
+        emotion = label_encoder.inverse_transform([pred])[0]
 
-        st.success(
-            f"Predicted Emotion: {emotion}"
-        )
+        st.success(f"Predicted Emotion: {emotion}")
 
 
 # =========================
@@ -426,30 +359,26 @@ elif mode == "Text Only":
 
     if text_input:
 
-        text_model = load_text_model()
+        with st.spinner("Loading text model..."):
 
-        embedding = extract_text_embedding(
-            text_input
-        )
+            text_model = load_text_model()
 
-        with torch.no_grad():
-
-            outputs = text_model(
-                embedding
+            embedding = extract_text_embedding(
+                text_input
             )
 
-            pred = torch.argmax(
-                outputs,
-                dim=1
-            ).item()
+            with torch.no_grad():
 
-        emotion = label_encoder.inverse_transform(
-            [pred]
-        )[0]
+                outputs = text_model(embedding)
 
-        st.success(
-            f"Predicted Emotion: {emotion}"
-        )
+                pred = torch.argmax(
+                    outputs,
+                    dim=1
+                ).item()
+
+        emotion = label_encoder.inverse_transform([pred])[0]
+
+        st.success(f"Predicted Emotion: {emotion}")
 
 
 # =========================
@@ -469,38 +398,32 @@ elif mode == "Multimodal":
 
     if uploaded_audio and text_input:
 
-        fusion_model = load_fusion_model()
-
         st.audio(uploaded_audio)
 
-        _, speech_embedding = (
-            extract_speech_embedding(
+        with st.spinner("Loading multimodal model..."):
+
+            fusion_model = load_fusion_model()
+
+            _, speech_embedding = extract_speech_embedding(
                 uploaded_audio
             )
-        )
 
-        text_embedding = (
-            extract_text_embedding(
+            text_embedding = extract_text_embedding(
                 text_input
             )
-        )
 
-        with torch.no_grad():
+            with torch.no_grad():
 
-            outputs = fusion_model(
-                speech_embedding,
-                text_embedding
-            )
+                outputs = fusion_model(
+                    speech_embedding,
+                    text_embedding
+                )
 
-            pred = torch.argmax(
-                outputs,
-                dim=1
-            ).item()
+                pred = torch.argmax(
+                    outputs,
+                    dim=1
+                ).item()
 
-        emotion = label_encoder.inverse_transform(
-            [pred]
-        )[0]
+        emotion = label_encoder.inverse_transform([pred])[0]
 
-        st.success(
-            f"Predicted Emotion: {emotion}"
-        )
+        st.success(f"Predicted Emotion: {emotion}")
