@@ -1,9 +1,9 @@
 ---
 Title: Multimodal Emotion Recognition
-Sdk: streamlit
-Sdk_version: 1.35.0
-App_file: app.py
-Pinned: false
+sdk: streamlit
+sdk_version: 1.35.0
+app_file: app.py
+pinned: false
 ---
 
 # Multimodal Emotion Recognition
