@@ -1,10 +1,7 @@
 ---
 title: Multimodal Emotion Recognition
-emoji: 🎭
-colorFrom: blue
-colorTo: purple
 sdk: streamlit
-sdk_version: "1.35.0"
+sdk_version: 1.35.0
 app_file: app.py
 pinned: false
 ---
@@ -228,8 +225,8 @@ streamlit run app.py
 
 ## Author
 
-**Atmakuri Tagore Nandan**
-B.Tech — Computer Science and Engineering
+**Atmakuri Tagore Nandan** <br>
+B.Tech — Computer Science and Engineering <br>
 Hyderabad Institute of Technology and Management
 
 ---
