@@ -11,8 +11,226 @@ pinned: false
 
 # Multimodal Emotion Recognition
 
-Speech + Text + Multimodal Emotion Detection using:
-- Wav2Vec2
-- BERT
-- Attention Fusion
-- Streamlit
+*A Deep Learning Framework for Speech, Text, and Attention-Based Multimodal Emotion Classification*
+
+---
+
+## Overview
+
+This project presents a multimodal emotion recognition system that combines **speech-based acoustic learning** and **text-based contextual understanding** for robust emotion classification.
+
+The system was designed and implemented as an individual research-oriented project submission focused on:
+
+* temporal emotion modelling from speech,
+* contextual emotion understanding from text,
+* and multimodal fusion using attention mechanisms.
+
+The project evaluates and compares:
+
+* Speech-only learning
+* Text-only learning
+* Feature Concatenation Fusion
+* Attention-Based Fusion
+
+A live deployment of the system is also available using Hugging Face Spaces.
+
+---
+
+## Key Features
+
+* Speech Emotion Recognition using **Wav2Vec2 + BiLSTM**
+* Text Emotion Recognition using **BERT + MLP**
+* Multimodal Fusion using:
+
+  * Feature Concatenation
+  * Attention-Based Fusion
+* t-SNE Visualization of learned embeddings
+* Confusion Matrix and Training Curve Analysis
+* Failure Case Analysis
+* Live Streamlit Deployment on Hugging Face
+
+---
+
+## Architecture
+
+### 1. Speech Pipeline
+
+* **Feature Extractor:** Wav2Vec2
+* **Temporal Modelling:** BiLSTM
+* **Classifier:** Fully Connected Neural Network
+
+The speech pipeline captures temporal acoustic patterns such as:
+
+* pitch,
+* tone,
+* energy,
+* and emotional prosody.
+
+---
+
+### 2. Text Pipeline
+
+* **Feature Extractor:** BERT Embeddings
+* **Classifier:** Multi-Layer Perceptron (MLP)
+
+The text pipeline focuses on contextual semantic understanding from textual emotion representations.
+
+---
+
+### 3. Fusion Pipeline
+
+Two multimodal fusion strategies were implemented:
+
+#### A. Feature Concatenation Fusion
+
+Speech and text embeddings are concatenated directly before classification.
+
+#### B. Attention-Based Fusion
+
+An attention mechanism dynamically learns modality importance and improves feature interaction between speech and text representations.
+
+---
+
+## Experimental Results
+
+| Model            | Architecture           | Accuracy   |
+| ---------------- | ---------------------- | ---------- |
+| Speech-only      | Wav2Vec2 + BiLSTM      | **95.36%** |
+| Text-only        | BERT + MLP             | **12.50%** |
+| Fusion Concat    | Feature Concatenation  | **84.46%** |
+| Attention Fusion | Attention-Based Fusion | **92.14%** |
+
+### Key Observation
+
+The speech modality achieved the highest performance due to strong emotional cues present in acoustic signals.
+
+Attention-based fusion significantly improved multimodal performance compared to direct feature concatenation by dynamically emphasizing informative modality features.
+
+---
+
+## Emotion Cluster Visualization
+
+t-SNE visualizations were generated for:
+
+* Speech embeddings
+* Text embeddings
+* Fusion embeddings
+
+These visualizations demonstrate the separability of learned emotional representations across different modelling blocks.
+
+---
+
+## Failure Analysis
+
+Several challenging emotion pairs were identified during evaluation:
+
+| Actual Emotion | Predicted Emotion | Reason                            |
+| -------------- | ----------------- | --------------------------------- |
+| Happy          | Pleasant Surprise | Similar acoustic energy patterns  |
+| Neutral        | Sad               | Low-intensity vocal expressions   |
+| Disgust        | Angry             | Overlapping tonal characteristics |
+
+The text-only model showed weak generalization due to limited semantic diversity in textual emotion cues.
+
+---
+
+## Project Structure
+
+```text
+project/
+├── models/
+│
+├── speech_pipeline/
+│   ├── train.py
+│   ├── test.py
+│   └── emotion_bilstm.pth
+│
+├── text_pipeline/
+│   ├── train.py
+│   ├── test.py
+│   └── text_mlp.pth
+│
+├── fusion_pipeline/
+│   ├── train.py
+│   ├── test.py
+│   ├── fusion_concat_model.pth
+│   └── attention_fusion_model.pth
+│
+├── Results/
+│   ├── accuracy_tables/
+│   ├── speech_pipeline/
+│   ├── text_pipeline/
+│   ├── fusion_pipeline/
+│   └── failure_cases/
+│
+├── utils/
+├── app.py
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Live Demo
+
+Hugging Face Deployment:
+
+[Multimodal Emotion Recognition Demo](https://huggingface.co/spaces/Tagorenandan22/multimodal-emotion-recognition?utm_source=chatgpt.com)
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone <repository-link>
+cd multimodal-emotion-recognition
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the application:
+
+```bash
+streamlit run app.py
+```
+
+---
+
+## Technologies Used
+
+* Python
+* PyTorch
+* Transformers
+* Wav2Vec2
+* BERT
+* Streamlit
+* Scikit-learn
+* Matplotlib
+* Hugging Face Spaces
+
+---
+
+## Future Improvements
+
+* Incorporating larger multimodal datasets
+* Exploring Transformer-based fusion architectures
+* Real-time streaming emotion recognition
+* Multilingual emotion understanding
+* GPU-optimized training using larger-scale transformer models
+
+---
+
+## Author
+
+**Atmakuri Tagore Nandan**
+B.Tech — Computer Science and Engineering
+Hyderabad Institute of Technology and Management
+
+---
+
