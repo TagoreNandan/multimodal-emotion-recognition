@@ -19,7 +19,7 @@ This project presents a multimodal emotion recognition system that combines **sp
 The system was designed and implemented as an individual research-oriented project submission focused on:
 
 * temporal emotion modelling from speech,
-* contextual emotion understanding from text,
+* contextual textual representation learning,
 * and multimodal fusion using attention mechanisms.
 
 The project evaluates and compares:
@@ -99,7 +99,7 @@ An attention mechanism dynamically learns modality importance and improves featu
 
 ### Key Observation
 
-The speech modality achieved the highest performance due to strong emotional cues present in acoustic signals.
+The speech modality produced the strongest emotional separability due to rich acoustic prosodic information present in vocal signals.
 
 Attention-based fusion significantly improved multimodal performance compared to direct feature concatenation by dynamically emphasizing informative modality features.
 
@@ -170,28 +170,55 @@ project/
 
 ## Live Demo
 
+GitHub Repository:
+https://github.com/TagoreNandan/multimodal-emotion-recognition
+
 Hugging Face Deployment:
 
 [Multimodal Emotion Recognition Demo](https://huggingface.co/spaces/Tagorenandan22/multimodal-emotion-recognition?utm_source=chatgpt.com)
 
 ---
 
-## Installation
+## How to Execute the Project
 
-Clone the repository:
+### 1. Clone the Repository
 
 ```bash
-git clone <repository-link>
+git clone https://github.com/TagoreNandan/multimodal-emotion-recognition
 cd multimodal-emotion-recognition
 ```
 
-Install dependencies:
+### 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run the application:
+### 3. Prepare Dataset
+
+Download and organize the TESS dataset inside the project directory following the folder structure expected by the training scripts.
+
+### 4. Run Individual Pipelines
+
+Speech Pipeline:
+
+```bash
+python models/speech_pipeline/train.py
+```
+
+Text Pipeline:
+
+```bash
+python models/text_pipeline/train.py
+```
+
+Fusion Pipeline:
+
+```bash
+python models/fusion_pipeline/train.py
+```
+
+### 5. Launch the Web Application
 
 ```bash
 streamlit run app.py
@@ -218,7 +245,6 @@ streamlit run app.py
 * Incorporating larger multimodal datasets
 * Exploring Transformer-based fusion architectures
 * Real-time streaming emotion recognition
-* Multilingual emotion understanding
 * GPU-optimized training using larger-scale transformer models
 
 ---
